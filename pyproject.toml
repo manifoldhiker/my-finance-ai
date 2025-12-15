@@ -1,0 +1,22 @@
+[project]
+name = "financial-agent"
+version = "0.1.0"
+description = "Financial agent with Monobank and Wise MCP servers"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp",
+    "httpx",
+    "python-dotenv",
+    "pydantic",
+    "requests",
+    "monobank",
+    "langchain",
+    "langchain-openai",
+    "typer"
+]
+
+[tool.uv]
+dev-dependencies = [
+    "jupyter",
+    "ipykernel"
+]
