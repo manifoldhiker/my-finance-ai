@@ -1,0 +1,16 @@
+services:
+  financial-mcp:
+    build: .
+    command: python -m financial_mcp.mcp_server
+    ports:
+      - "8000:8000"
+    environment:
+      - MONOBANK_API_TOKEN=${MONOBANK_API_TOKEN}
+      - WISE_API_TOKEN=${WISE_API_TOKEN}
+      - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -H \"Authorization: Bearer $MCP_AUTH_TOKEN\" http://localhost:8000/sse || curl -f http://localhost:8000/sse"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
