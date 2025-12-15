@@ -19,32 +19,45 @@ def format_currency(amount: float, currency: str) -> str:
     return f"{symbol}{amount:,.2f}"
 
 
-def fetch_all_transactions(days: int = 14) -> List[Dict[str, Any]]:
+def fetch_all_transactions(
+    days: int = 14,
+    banks: Optional[List[str]] = None
+) -> List[Dict[str, Any]]:
     """
-    Fetch transactions from all configured sources (Monobank + Wise).
+    Fetch transactions from specified sources (Monobank + Wise).
+    
+    Args:
+        days: Number of days to fetch transactions for.
+        banks: List of banks to fetch from. Options: "mono", "wise".
+               Defaults to ["mono", "wise"] if not specified.
     
     Returns:
         List of normalized transaction objects sorted by date descending.
     """
+    if banks is None:
+        banks = ["mono", "wise"]
+    
     all_txs = []
     
     # Fetch from Monobank
-    try:
-        mono_client = MonobankClient()
-        monobank_txs = mono_client.get_all_transactions(days=days)
-        mono_client.close()
-        all_txs.extend(monobank_txs)
-    except Exception as e:
-        print(f"Monobank error: {e}")
+    if "mono" in banks:
+        try:
+            mono_client = MonobankClient()
+            monobank_txs = mono_client.get_all_transactions(days=days)
+            mono_client.close()
+            all_txs.extend(monobank_txs)
+        except Exception as e:
+            print(f"Monobank error: {e}")
     
     # Fetch from Wise
-    try:
-        wise_client = WiseClient()
-        wise_txs = wise_client.get_all_transactions(days=days)
-        wise_client.close()
-        all_txs.extend(wise_txs)
-    except Exception as e:
-        print(f"Wise error: {e}")
+    if "wise" in banks:
+        try:
+            wise_client = WiseClient()
+            wise_txs = wise_client.get_all_transactions(days=days)
+            wise_client.close()
+            all_txs.extend(wise_txs)
+        except Exception as e:
+            print(f"Wise error: {e}")
     
     return sorted(all_txs, key=lambda x: x["date"], reverse=True)
 
@@ -225,7 +238,10 @@ def generate_report(all_txs: List[Dict[str, Any]], days: int = 14) -> str:
     return "\n".join(lines)
 
 
-def generate_spending_report(days: int = 14) -> str:
+def generate_spending_report(
+    days: int = 14,
+    banks: Optional[List[str]] = None
+) -> str:
     """
     Generate a complete spending report for the given period.
     
@@ -234,10 +250,12 @@ def generate_spending_report(days: int = 14) -> str:
     
     Args:
         days: Number of days to include in the report (default: 14)
+        banks: List of banks to fetch from. Options: "mono", "wise".
+               Defaults to ["mono", "wise"] if not specified.
         
     Returns:
         Markdown formatted spending report
     """
-    transactions = fetch_all_transactions(days=days)
+    transactions = fetch_all_transactions(days=days, banks=banks)
     return generate_report(transactions, days=days)
 
