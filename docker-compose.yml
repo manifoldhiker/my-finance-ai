@@ -1,7 +1,7 @@
 services:
   financial-mcp:
     build: .
-    command: python -m financial_mcp.mcp_server
+    command: python -m mcp.mcp_server
     ports:
       - "8000:8000"
     environment:

@@ -31,4 +31,4 @@ ENV PYTHONPATH=/app
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Default command (can be overridden by docker-compose)
-CMD ["python", "-m", "financial_mcp.mcp_server"]
+CMD ["python", "-m", "mcp.mcp_server"]
